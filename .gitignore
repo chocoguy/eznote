@@ -1,0 +1,4 @@
+node_modules
+model/default.json
+.env
+model/defjam.json
