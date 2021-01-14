@@ -1,12 +1,19 @@
-import express from 'express';
-import controller from './controller.js'
+import express from 'express';;
+import controller from './controller.js';
+import { protectRoute } from './auth.js';
+import { authorize } from './authorizeMachine';
 
 const router = express.Router();
 
-router.route("/createnote").post(controller.createNote);
-router.route("/viewnotes").get(controller.viewNotes);
-router.route("/editnote/:id").put(controller.editNote);
-router.route("/deletenote/:id").get(controller.deleteNote);
-router.route("/viewnote/:id").get(controller.viewNote);
+//http://localhost:5000/api/note/createnote
+router.route("/createnote").post(authorize, controller.createNote);
+//http://localhost:5000/api/note/viewnotes
+router.route("/viewnotes").get(authorize, controller.viewNotes);
+//http://localhost:5000/api/note/editnote/3736
+router.route("/editnote/:id").put(authorize,  controller.editNote);
+//http://localhost:5000/api/note/deletenote/3736
+router.route("/deletenote/:id").get(authorize, controller.deleteNote);
+//http://localhost:5000/api/note/viewnote/3736
+router.route("/viewnote/:id").get(authorize, controller.viewNote);
 
 export default router;

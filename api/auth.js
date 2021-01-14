@@ -1,4 +1,4 @@
-import e from 'express';
+import express from 'express';
 import jwt from 'jsonwebtoken'
 import User from '../model/User.js';
 
