@@ -3,8 +3,8 @@ import User from '../model/User.js';
 import Note from '../model/Note.js';
 import dotenv from 'dotenv';
 import Cryptr from 'cryptr';
-import { genToken } from './tokenMachine.js';
-import { post } from 'request';
+import  genToken  from './tokenMachine.js';
+import makeId from './makeId.js'
 dotenv.config();
 
 
@@ -33,15 +33,6 @@ class controller {
 
 // Ctrl + / so you can comment all at once
 
-static makeId(length){
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 
 
 
@@ -51,7 +42,7 @@ static async register(req, res, next){
         if(!req.body.username || !req.body.password){
             return res.status(400).json({"error" : "username or password has not been provided"})
         }
-        const { username, password } = req.body;
+        const { username} = req.body;
 
         let user = await User.findOne({username});
 
@@ -63,27 +54,30 @@ static async register(req, res, next){
 
         const salt = await bcrypt.genSalt(10);
 
-        let encryptedPass= await bcrypt.hash(password, salt);
+        let password = await bcrypt.hash(req.body.password, salt);
 
-        let userIde = this.makeId(7)
-        let noteKey = this.makeId(9)
+
+        let userId = makeId(7)
+        let noteKey = makeId(9)
 
         let uploadedUser = await User.create({
             username,
-            userIde,
+            userId,
             noteKey,
-            encryptedPass,
+            password,
             
         })
 
+        let newToken = await genToken(uploadedUser._id, uploadedUser.userId, uploadedUser.noteKey)
 
+    
         if(uploadedUser) {
             res.status(201).json({
                 _id: uploadedUser._id,
                 userId: uploadedUser.userId,
                 noteKey: uploadedUser.noteKey,
                 username: uploadedUser.username,
-                token: genToken(uploadedUser._id, uploadedUser.userId, uploadedUser.noteKey)
+                token: newToken
             })
         }else{
             throw "Register user failure please try again later"
@@ -282,8 +276,8 @@ static async deleteAccount(req, res){
 static async testRoute(req, res){
     try{
 
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
+        //const user = await User.findById(req.user.id).select('-password');
+        res.status(200).json({"Helllo": "Welcome to backend"});
 
     }catch(error){
         console.log(`Error occured testroute ${error}`)

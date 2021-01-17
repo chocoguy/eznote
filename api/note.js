@@ -1,7 +1,7 @@
 import express from 'express';;
 import controller from './controller.js';
 import { protectRoute } from './auth.js';
-import { authorize } from './authorizeMachine';
+import { authorize } from './authorizeMachine.js';
 
 const router = express.Router();
 

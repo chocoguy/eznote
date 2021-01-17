@@ -6,4 +6,4 @@ const genToken = (id, userId, noteKey) => {
     })
 }
 
-export default {genToken}
+export default (genToken)
