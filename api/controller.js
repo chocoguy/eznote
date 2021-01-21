@@ -34,8 +34,8 @@ class controller {
 // Ctrl + / so you can comment all at once
 
 
-
-
+// http://example.com/api/user/register
+//OK
 static async register(req, res, next){
     try{
 
@@ -90,6 +90,8 @@ static async register(req, res, next){
     }
 }
 
+// http://example.com/api/user/login
+//OK
 static async login(req, res){
     try{
 
@@ -125,25 +127,29 @@ static async login(req, res){
     }
 }
 
+//http://localhost:5000/api/note/createnote
+// OK
 static async createNote(req, res){
     try{
         
+        
+
         if(!req.body.notetitle || !req.body.notetext){
             return res.status(400).json({"error" : "Title or text has not been provided"})
         }
 
-        const {notetitle, notetext} = req.body;
+
 
         const cryptr = new Cryptr(req.user.noteKey)
 
         //encrypt notes
-        const encryptedTitle = cryptr.encrypt(notetitle);
-        const encryptedNote = cryptr.encrypt(notetext);
+        const encryptedTitle = cryptr.encrypt(req.body.notetitle);
+        const encryptedNote = cryptr.encrypt(req.body.notetext);
 
         const newNote = new Note ({
             userId: req.user.userId,
-            encryptedTitle,
-            encryptedNote
+            notetext: encryptedTitle,
+            notetitle: encryptedNote
         });
 
         const createdNote = await newNote.save();
@@ -154,6 +160,8 @@ static async createNote(req, res){
     }
 }
 
+//http://localhost:5000/api/note/viewnotes
+// OK
 static async viewNotes(req, res){
     try{
 
@@ -161,11 +169,16 @@ static async viewNotes(req, res){
 
         const cryptr = new Cryptr(req.user.noteKey)
 
-        for(i = 0; i < notes.length; i++);
-        {
-            notes[i].notetext = cryptr.decrypt(notes[i].notetext);
-            notes[i].notetitle = cryptr.decrypt(notes[i].notetitle);
-        }
+        notes.map(note => {
+            note.notetext = cryptr.decrypt(note.notetext)
+            note.notetitle = cryptr.decrypt(note.notetitle)
+        })
+
+//        for(i = 0; i < notes.length; i++);
+//        {
+//            notes[i].notetext = cryptr.decrypt(notes[i].notetext);
+//            notes[i].notetitle = cryptr.decrypt(notes[i].notetitle);
+//        }
 
         res.json(notes);
 
@@ -176,6 +189,8 @@ static async viewNotes(req, res){
     }
 }
 
+//http://localhost:5000/api/note/editnote/3736
+// OK
 static async editNote(req, res){
     try{
 
@@ -205,6 +220,8 @@ static async editNote(req, res){
     }
 }
 
+
+// OK
 static async deleteNote(req, res){
     try{
 
@@ -226,6 +243,8 @@ static async deleteNote(req, res){
     }
 }
 
+//http://localhost:5000/api/note/viewnote/3736
+// OK
 static async viewNote(req, res){
     try{
 
@@ -250,15 +269,15 @@ static async viewNote(req, res){
     }
 }
 
+//http://localhost:5000/api/user/deleteacc
+//! OK
 static async deleteAccount(req, res){
     try{
 
         const user = await User.findById(req.user.id)
-        const userNotes = await Note.find({userId : req.user.userId});
 
-        if(userNotes){
-            return res.status(401).json({"error" : "All notes must be deleted before deleting account"})
-        }
+
+  
 
         const isMatch = await bcrypt.compare(req.body.password, user.password)
 
@@ -266,13 +285,14 @@ static async deleteAccount(req, res){
             return res.status(400).json({"error" : "Username And/Or password is invalid"})
         }
         await user.remove();
-
+        res.json({"msg" : "user removed"})
     }catch(error){
         console.log(`Error occured ${error}`)
         res.status(500).json({"error" : "Server error when deleting note"})
     }
 }
 
+// OK
 static async testRoute(req, res){
     try{
 
