@@ -35,6 +35,15 @@
   color: #61dafb;
 }
 
+.taskbar-main{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  align-content: space-between;
+  list-style: none;
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

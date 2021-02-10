@@ -9,20 +9,33 @@ import Help from './components/Help';
 import Notes from './basedcomponents/Notes';
 import Create from './basedcomponents/Create';
 import Edit from './basedcomponents/Edit';
-import Main from './components/Main';
+
 
 
 
 const App = () => {
   return (
-    <Provider store = {store}>
       <Router>
         <div className="container-div">
-        <Route exact path="/" component = { Main } />
+        <Route exact path="/" component={Landing} />
+        <section className="section-div">
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/help" component={Help} />
+            <Route exact path="/notes" component={Notes} />
+            <Route exact path="/createnote" component={Create} />
+            <Route exact path="/editnote" component={Edit} />
+          </Switch>
+          <Taskbar />
+        </section>
         </div>
       </Router>
-    </Provider>
   )
 }
+
+//need route to view single note
+//     <Provider store = {store}>
+//     </Provider>
 
 export default App
